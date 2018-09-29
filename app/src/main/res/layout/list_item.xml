@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:minHeight="60dp"
+
+    >
+
+    <TextView
+
+        android:id="@+id/list_magnitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+android:layout_marginLeft="8dp"
+        tools:text="7.9" />
+
+    <TextView
+        android:id="@+id/list_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+android:layout_toRightOf="@id/list_magnitude"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+android:layout_marginLeft="8dp"
+
+        tools:text="Tijuana, Mexico" />
+
+    <TextView
+        android:layout_centerVertical="true"
+        android:id="@+id/list_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+android:layout_marginRight="8dp"
+        tools:text="September 28, 2018" />
+
+</RelativeLayout>
