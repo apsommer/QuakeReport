@@ -3,37 +3,46 @@ package com.example.android.quakereport;
 import android.location.Location;
 
 /**
- * Custom Earthquake object contains 1 float, 2 strings
+ * Custom Earthquake object contains 1 float, 1 String, 1 long
  */
 public class Earthquake {
 
     // magnitude
-    private float mMagnitude;
+    private double mMagnitude;
 
     // location
     private String mLocation;
 
-    // date
-    private String mDate;
+    // time in Unix epoch milliseconds
+    private long mTime;
+
+    // url for specific USGS event page
+    private String mUrl;
 
     // constructor
-    public Earthquake(float magnitude, String location, String date) {
+    public Earthquake(double magnitude, String location, long time, String url) {
         mMagnitude = magnitude;
         mLocation = location;
-        mDate = date;
+        mTime = time;
+        mUrl = url;
     }
 
     // gets magnitude
-    public float getMagnitude() { return mMagnitude; }
+    public double getMagnitude() { return mMagnitude; }
 
     // gets location
     public String getLocation() {
         return mLocation;
     }
 
-    // gets date
-    public String getDate() {
-        return mDate;
+    // gets time
+    public long getTime() {
+        return mTime;
+    }
+
+    // gets url
+    public String getUrl() {
+        return mUrl;
     }
 
     @Override
@@ -41,7 +50,8 @@ public class Earthquake {
         return "Earthquake{" +
                 "mMagnitude ='" + mMagnitude + '\'' +
                 ", mLocation ='" + mLocation + '\'' +
-                ", mDate =" + mDate +
+                ", mTime =" + mTime + '\'' +
+                ", mUrl =" + mUrl +
                 '}';
     }
 
