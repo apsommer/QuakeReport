@@ -29,6 +29,7 @@ public final class QueryUtils {
     private QueryUtils() {}
 
     // query the USGS database and return an ArrayList of Earthquake objects
+    // this is the only public method in this class, used by EarthquakeAsyncTask in EarthquakeActivity
     public static ArrayList<Earthquake> fetchEarthquakeData(String requestUrl) {
 
         // transform url string to URL object
@@ -45,7 +46,7 @@ public final class QueryUtils {
         }
 
         // Extract relevant fields from the JSON response and create an {@link Event} object
-        ArrayList<Earthquake> earthquakes = extractEarthquakes(jsonResponse);
+        ArrayList<Earthquake> earthquakes = extractEarthquakesFromJSON(jsonResponse);
 
         // Return the {@link Event}
         return earthquakes;
@@ -150,7 +151,7 @@ public final class QueryUtils {
 
 
     // Return a list of Earthquake objects built up from parsing a JSON response.
-    private static ArrayList<Earthquake> extractEarthquakes(String jsonResponse) {
+    private static ArrayList<Earthquake> extractEarthquakesFromJSON(String jsonResponse) {
 
         // initialize an empty ArrayList
         ArrayList<Earthquake> earthquakes = new ArrayList<>();
