@@ -1,10 +1,6 @@
 package com.example.android.quakereport;
 
-import android.location.Location;
-
-/**
- * Custom Earthquake object contains 1 float, 1 String, 1 long
- */
+// custom Earthquake object represents metadata for an given earthquake event
 public class Earthquake {
 
     // magnitude

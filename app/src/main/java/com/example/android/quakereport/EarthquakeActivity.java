@@ -1,21 +1,25 @@
-
 package com.example.android.quakereport;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EarthquakeActivity extends AppCompatActivity {
 
+    // simple string tag for log messages
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
+
+    // Query returns JSON object representing the 10 most recent earthquakes with a magnitude of at least 6
+    private static final String USGS_REQUEST_URL =
+            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&limit=30";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,14 +28,49 @@ public class EarthquakeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
 
-        // list of earthquakes
-        final ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
+        // start background thread to open url connection
+        new EarthquakeAsyncTask().execute(USGS_REQUEST_URL);
+
+    }
+
+    // inner class for asynchronous background thread
+    private class EarthquakeAsyncTask extends AsyncTask<String, Void, List<Earthquake>> {
+
+        @Override
+        protected List<Earthquake> doInBackground(String... url) {
+
+            // check that the input parameter has at least one string
+            if (url.length < 1 || url[0] == null) {
+                return null;
+            }
+
+            // Perform the HTTP request for earthquake data and process the response.
+            List<Earthquake> earthquakes = QueryUtils.fetchEarthquakeData(url[0]);
+            return earthquakes;
+
+        }
+
+        @Override
+        protected void onPostExecute(List<Earthquake> earthquakes) {
+
+            // check that the input parameter exists
+            if (earthquakes == null) {
+                return;
+            }
+
+            // Update the information displayed to the user.
+            updateUi(earthquakes);
+        }
+    }
+
+    // network call finished, update UI
+    private void updateUi(List<Earthquake> earthquakes) {
 
         // find a reference to the ListView
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
         // custom adapter populates ListView
-        final EarthquakeAdapter adapter = new EarthquakeAdapter(this, earthquakes);
+        final EarthquakeAdapter adapter = new EarthquakeAdapter(this, (ArrayList) earthquakes);
         earthquakeListView.setAdapter(adapter);
 
         // set an item click listener on the ListView items
@@ -60,6 +99,6 @@ public class EarthquakeActivity extends AppCompatActivity {
             }
 
         });
-
     }
+
 }
