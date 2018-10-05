@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
     // query returns JSON object representing the 10 most recent earthquakes with a magnitude of at least 6
     private static final String USGS_REQUEST_URL =
-            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&limit=30";
+            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&limit=50";
 
     // constant value for the ID of the single earthquake loader
     private static final int EARTHQUAKE_LOADER_ID = 0;
@@ -106,6 +107,10 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
         // clear the adapter of any previous query to USGS database
         mAdapter.clear();
+
+        // hide the progress bar
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.GONE);
 
         // check the input exists and is not empty
         if (earthquakes != null && !earthquakes.isEmpty()) {
