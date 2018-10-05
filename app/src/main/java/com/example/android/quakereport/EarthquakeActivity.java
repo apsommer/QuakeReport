@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,9 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     // initialize adapter for the ListView of Earthquake objects
     private EarthquakeAdapter mAdapter;
 
+    // initialize a TextView as the empty state of the ListView
+    private TextView mEmptyTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -39,6 +44,10 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
         // find a reference to the ListView
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
+
+        // define an empty view in the rare case no earthquakes exist for the URL query parameters
+        mEmptyTextView = (TextView) findViewById(R.id.empty_list);
+        earthquakeListView.setEmptyView(mEmptyTextView);
 
         // custom adapter populates ListView
         mAdapter = new EarthquakeAdapter(this, earthquakes);
@@ -86,7 +95,9 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
         // create and return a new loader with the given URL
         EarthquakeLoader loader = new EarthquakeLoader(this, USGS_REQUEST_URL);
+
         return loader;
+
     }
 
     // automatically called when loader background thread completes
@@ -102,11 +113,16 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
             // calling addAll method on the adapter automatically triggers the ListView to update
             mAdapter.addAll(earthquakes);
         }
+        else {
+
+            // the earthquakes list is empty
+            mEmptyTextView.setText(R.string.no_earthquakes_found);
+        }
 
     }
 
     // previously created loader is no longer needed and existing data should be discarded
-    // this will never happen in this app as the loader only makes a single network call
+    // for this app, this only happens when the device "Back" button is pressed
     @Override
     public void onLoaderReset(Loader<List<Earthquake>> loader) {
 

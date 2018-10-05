@@ -8,6 +8,9 @@ import java.util.List;
 // to perform a network URL request
 public class EarthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
 
+    // simple tag for log messages
+    private static final String LOG_TAG = EarthquakeLoader.class.getSimpleName();
+
     // initialize state variable for url String
     private String mUrl;
 
@@ -25,6 +28,7 @@ public class EarthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
 
         // this method is required to trigger loadInBackground()
         forceLoad();
+
     }
 
     @Override
@@ -37,6 +41,7 @@ public class EarthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
 
         // Perform the HTTP request for earthquake data and process the response.
         List<Earthquake> earthquakes = QueryUtils.fetchEarthquakeData(mUrl);
+
         return earthquakes;
 
     }
