@@ -1,6 +1,8 @@
 package com.example.android.quakereport;
 
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,11 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class EarthquakeActivity extends AppCompatActivity {
+public class EarthquakeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Earthquake>> {
 
     // simple string tag for log messages
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
@@ -68,43 +69,43 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         });
 
-        // start background thread to open url connection
-        // the conclusion of the background thread updates the UI
-        new EarthquakeAsyncTask().execute(USGS_REQUEST_URL);
+//        // start background thread to open url connection
+//        // the conclusion of the background thread updates the UI
+//        new EarthquakeAsyncTask().execute(USGS_REQUEST_URL);
+
+        // initialize a loader manager to handle background thread
+        // this automatically calls onCreateLoader()
+        getLoaderManager().initLoader(0, null, this);
 
     }
 
-    // inner class for asynchronous background thread
-    private class EarthquakeAsyncTask extends AsyncTask<String, Void, List<Earthquake>> {
+    @Override
+    public Loader<List<Earthquake>> onCreateLoader(int i, Bundle bundle) {
 
-        @Override
-        protected List<Earthquake> doInBackground(String... url) {
-
-            // check that the input parameter has at least one string
-            if (url.length < 1 || url[0] == null) {
-                return null;
-            }
-
-            // Perform the HTTP request for earthquake data and process the response.
-            List<Earthquake> earthquakes = QueryUtils.fetchEarthquakeData(url[0]);
-            return earthquakes;
-
-        }
-
-        @Override
-        protected void onPostExecute(List<Earthquake> earthquakes) {
-
-            // clear the adapter of any previous query to USGS database
-            mAdapter.clear();
-
-            // check the input exists and is not empty
-            if (earthquakes != null && !earthquakes.isEmpty()) {
-
-                // calling addAll method on the adapter triggers the ListView to update
-                mAdapter.addAll(earthquakes);
-            }
-
-        }
+        // create and return a new EarthquakeLoader instance
+        EarthquakeLoader loader = new EarthquakeLoader(this, USGS_REQUEST_URL);
+        return loader;
     }
 
+    @Override
+    public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakes) {
+
+        // clear the adapter of any previous query to USGS database
+        mAdapter.clear();
+
+        // check the input exists and is not empty
+        if (earthquakes != null && !earthquakes.isEmpty()) {
+
+            // calling addAll method on the adapter triggers the ListView to update
+            mAdapter.addAll(earthquakes);
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Earthquake>> loader) {
+
+        // previously created loader is no longer needed and existing data can be discarded
+
+    }
 }
