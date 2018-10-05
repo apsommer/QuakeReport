@@ -1,8 +1,11 @@
 package com.example.android.quakereport;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,18 +23,17 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     // simple string tag for log messages
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
 
-    // query returns JSON object representing the 10 most recent earthquakes with a magnitude of at least 6
+    // URL query returns JSON object representing the most recent earthquakes
     private static final String USGS_REQUEST_URL =
             "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&limit=50";
 
     // constant value for the ID of the single earthquake loader
     private static final int EARTHQUAKE_LOADER_ID = 0;
 
-    // initialize adapter for the ListView of Earthquake objects
+    // define state variables to be initialized in onCreate()
     private EarthquakeAdapter mAdapter;
-
-    // initialize a TextView as the empty state of the ListView
     private TextView mEmptyTextView;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +48,16 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         // find a reference to the ListView
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
+        // custom adapter populates ListView
+        mAdapter = new EarthquakeAdapter(this, earthquakes);
+        earthquakeListView.setAdapter(mAdapter);
+
         // define an empty view in the rare case no earthquakes exist for the URL query parameters
         mEmptyTextView = (TextView) findViewById(R.id.empty_list);
         earthquakeListView.setEmptyView(mEmptyTextView);
 
-        // custom adapter populates ListView
-        mAdapter = new EarthquakeAdapter(this, earthquakes);
-        earthquakeListView.setAdapter(mAdapter);
+        // define and display ProgressBar
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         // set an item click listener on the ListView items
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -81,11 +86,30 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
         });
 
-        // initialize a loader manager to handle a background thread
-        LoaderManager loaderManager = getLoaderManager();
+        // get status of internet connectivity
+        ConnectivityManager connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        boolean isConnected = (activeNetwork != null) && activeNetwork.isConnectedOrConnecting();
 
-        // automatically calls onCreateLoader()
-        loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+        // check status for internet connectivity
+        if (isConnected) {
+
+            // initialize a loader manager to handle a background thread
+            LoaderManager loaderManager = getLoaderManager();
+
+            // automatically calls onCreateLoader()
+            loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+
+        }
+        else { // not connected to internet
+
+            // hide the progress bar
+            mProgressBar.setVisibility(View.GONE);
+
+            // the earthquakes list is empty
+            mEmptyTextView.setText(R.string.no_internet_connection);
+
+        }
 
     }
 
@@ -109,8 +133,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         mAdapter.clear();
 
         // hide the progress bar
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
 
         // check the input exists and is not empty
         if (earthquakes != null && !earthquakes.isEmpty()) {
