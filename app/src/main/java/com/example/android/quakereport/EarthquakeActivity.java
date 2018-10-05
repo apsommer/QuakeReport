@@ -4,7 +4,6 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -21,6 +20,9 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     // query returns JSON object representing the 10 most recent earthquakes with a magnitude of at least 6
     private static final String USGS_REQUEST_URL =
             "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&limit=30";
+
+    // constant value for the ID of the single earthquake loader
+    private static final int EARTHQUAKE_LOADER_ID = 0;
 
     // initialize adapter for the ListView of Earthquake objects
     private EarthquakeAdapter mAdapter;
@@ -69,24 +71,25 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
         });
 
-//        // start background thread to open url connection
-//        // the conclusion of the background thread updates the UI
-//        new EarthquakeAsyncTask().execute(USGS_REQUEST_URL);
+        // initialize a loader manager to handle a background thread
+        LoaderManager loaderManager = getLoaderManager();
 
-        // initialize a loader manager to handle background thread
-        // this automatically calls onCreateLoader()
-        getLoaderManager().initLoader(0, null, this);
+        // automatically calls onCreateLoader()
+        loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
 
     }
 
+    // automatically called when the loader manager determines that a loader with an id of
+    // EARTHQUAKE_LOADER_ID does not exist
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int i, Bundle bundle) {
 
-        // create and return a new EarthquakeLoader instance
+        // create and return a new loader with the given URL
         EarthquakeLoader loader = new EarthquakeLoader(this, USGS_REQUEST_URL);
         return loader;
     }
 
+    // automatically called when loader background thread completes
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakes) {
 
@@ -96,16 +99,19 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         // check the input exists and is not empty
         if (earthquakes != null && !earthquakes.isEmpty()) {
 
-            // calling addAll method on the adapter triggers the ListView to update
+            // calling addAll method on the adapter automatically triggers the ListView to update
             mAdapter.addAll(earthquakes);
         }
 
     }
 
+    // previously created loader is no longer needed and existing data should be discarded
+    // this will never happen in this app as the loader only makes a single network call
     @Override
     public void onLoaderReset(Loader<List<Earthquake>> loader) {
 
-        // previously created loader is no longer needed and existing data can be discarded
+        // removing all data from adapter automatically clears the UI listview
+        mAdapter.clear();
 
     }
 }
