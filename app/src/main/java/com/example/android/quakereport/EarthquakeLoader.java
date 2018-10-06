@@ -19,7 +19,7 @@ public class EarthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
         // inherit loader initialization configuration from superclass AsyncTaskLoader
         super(context);
 
-        // this loader will only one designated url address
+        // this loader has only one designated url address
         mUrl = url;
     }
 
@@ -39,7 +39,7 @@ public class EarthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
             return null;
         }
 
-        // Perform the HTTP request for earthquake data and process the response.
+        // perform the HTTP request for article data and process the JSON response
         List<Earthquake> earthquakes = QueryUtils.fetchEarthquakeData(mUrl);
 
         return earthquakes;

@@ -12,7 +12,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
@@ -165,6 +164,5 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         return ContextCompat.getColor(getContext(), color);
     }
-
 
 }

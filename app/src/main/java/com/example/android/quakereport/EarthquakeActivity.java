@@ -76,8 +76,8 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
                 // create Intent to open web browser
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW, earthquakeUri);
 
-                // this conditional prevents the app from crashing by ensuring an email app
-                // actually exists on the phone
+                // this conditional prevents the app from crashing by ensuring
+                // a web browser actually exists on the phone
                 if (websiteIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(websiteIntent);
                 }

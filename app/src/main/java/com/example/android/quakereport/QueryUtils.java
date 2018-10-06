@@ -14,19 +14,17 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-/**
- * Helper methods related to requesting and receiving earthquake data from USGS.
- */
+// helper methods related to requesting and receiving earthquake data from USGS
 public final class QueryUtils {
 
     // simple tag for log messages
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
 
-    // constructor is deliberately empty as no objects of this class should ever exist
+    // constructor is deliberately empty as no objects of this class will ever exist
     private QueryUtils() {}
 
     // query the USGS database and return an ArrayList of Earthquake objects
-    // this is the only public method in this class, used by EarthquakeAsyncTask in EarthquakeActivity
+    // this is the only public method in this class, , used by AsyncTaskLoader in EarthquakeLoader
     public static ArrayList<Earthquake> fetchEarthquakeData(String requestUrl) {
 
         // transform url string to URL object
@@ -39,10 +37,10 @@ public final class QueryUtils {
         try {
             jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error closing input stream", e);
+            Log.e(LOG_TAG, "Error closing input stream.", e);
         }
 
-        // Extract relevant fields from the JSON response and create an {@link Event} object
+        // extract relevant fields from the JSON response and create a list of Earthquakes
         ArrayList<Earthquake> earthquakes = extractEarthquakesFromJSON(jsonResponse);
 
         // Return the {@link Event}
@@ -57,7 +55,7 @@ public final class QueryUtils {
         try {
             url = new URL(stringUrl);
         } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "Error with creating URL ", e);
+            Log.e(LOG_TAG, "Error creating URL.", e);
         }
         return url;
     }
@@ -121,7 +119,7 @@ public final class QueryUtils {
     // Convert the InputStream into a String which contains the entire raw JSON response
     private static String readFromStream(InputStream inputStream) throws IOException {
 
-        // StringBuilder is mutable, convenient way to construct Strings
+        // StringBuilder is mutable, a convenient way to construct Strings
         StringBuilder output = new StringBuilder();
 
         // check that inputStream exists
@@ -181,7 +179,7 @@ public final class QueryUtils {
         } catch (JSONException e) {
 
             // log exception stack trace
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e(LOG_TAG, "Problem parsing the earthquake JSON results.", e);
         }
 
         // return the list of earthquakes
