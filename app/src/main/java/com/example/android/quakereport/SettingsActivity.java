@@ -28,14 +28,14 @@ public class SettingsActivity extends AppCompatActivity {
             // initialize fragment with superclass constructor
             super.onCreate(savedInstanceState);
 
-            // layout has a single EditText preference
+            // layout has a root PreferenceScreen with children EditTextPreference and ListPreference
             addPreferencesFromResource(R.xml.settings_main);
 
             // get preference key Strings
             String minMagnitudeKey = getString(R.string.settings_min_magnitude_key);
             String orderByKey = getString(R.string.settings_order_by_key);
 
-            // get the preference Objects for these keys
+            // get the preference Objects associated with these keys
             Preference minMagnitude = findPreference(minMagnitudeKey);
             Preference orderBy = findPreference(orderByKey);
 
@@ -56,7 +56,7 @@ public class SettingsActivity extends AppCompatActivity {
             // get the String key for the preference
             String preferenceKey = sharedPreferences.getString(preference.getKey(), "");
 
-            // update the preference TODO comments
+            // update preferences with the user defined values
             onPreferenceChange(preference, preferenceKey);
 
         }
@@ -67,26 +67,30 @@ public class SettingsActivity extends AppCompatActivity {
             // preference value is of type String
             String stringValue = value.toString();
 
-            // the order-by preference is a list
+            // the order-by preference is a list of Strings
             if (preference instanceof ListPreference) {
 
-                // cast preference to the proper subclass
+                // cast preference to the appropriate type
                 ListPreference listPreference = (ListPreference) preference;
 
                 // get index
                 int prefIndex = listPreference.findIndexOfValue(stringValue);
 
+                // simple check that we are indeed in a valid list
                 if (prefIndex >= 0) {
 
-                    //
+                    // get String arrays defined in arrays.xml
                     CharSequence[] labels = listPreference.getEntries();
+
+                    // setSummary updates the device's storage for app preferences
                     preference.setSummary(labels[prefIndex]);
                 }
 
             }
-
+            // the magnitude preference is a simple String
             else {
-                //
+
+                // setSummary updates the device's storage for app preferences
                 preference.setSummary(stringValue);
             }
 
@@ -96,7 +100,6 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     }
-
 
 
 }

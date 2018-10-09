@@ -69,7 +69,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+Log.e(LOG_TAG, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ onCreate");
         // super class constructor
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
