@@ -4,11 +4,14 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,8 +28,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
 
     // URL query returns JSON object representing the most recent earthquakes
-    private static final String USGS_REQUEST_URL =
-            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&limit=50";
+    private static final String USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query";
 
     // constant value for the ID of the single earthquake loader
     private static final int EARTHQUAKE_LOADER_ID = 0;
@@ -45,14 +47,14 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         return true;
     }
 
-    //
+    // called when the settings menu is clicked
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         // get id of menu item
         int id = item.getItemId();
 
-        // hamburger icon is pressed
+        // hamburger icon in top-right is pressed
         if (id == R.id.action_settings) {
 
             // explicit Intent to start new SettingsActivity
@@ -61,7 +63,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
             return true;
         }
 
-        // TODO comments ???
+        // call through to base class to perform the default menu handling
         return super.onOptionsItemSelected(item);
     }
 
@@ -148,9 +150,39 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int i, Bundle bundle) {
 
-        // create and return a new loader with the given URL
-        EarthquakeLoader loader = new EarthquakeLoader(this, USGS_REQUEST_URL);
+        // get the hardcoded default preferences
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+        // retrieve user preference for minimum magnitude
+        // a reference to the default preference is required by getString
+        String minMagnitudeKey = getString(R.string.settings_min_magnitude_key);
+        String minMagnitudeDefaultValue = getString(R.string.settings_min_magnitude_default);
+        String minMagnitude = sharedPrefs.getString(minMagnitudeKey, minMagnitudeDefaultValue);
+
+        // retrieve user preference for order-by
+        // a reference to the default preference is required by getString
+        String orderByKey = getString(R.string.settings_order_by_key);
+        String orderByDefaultValue = getString(R.string.settings_order_by_default);
+        String orderBy = sharedPrefs.getString(orderByKey , orderByDefaultValue);
+
+        // split URL String into constituent parts
+        Uri baseUri = Uri.parse(USGS_REQUEST_URL);
+
+        // prepare URI object for appending query parameters
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        // append query parameters, for example "format=geojson"
+        uriBuilder.appendQueryParameter("format", "geojson");
+        uriBuilder.appendQueryParameter("limit", "20");
+        uriBuilder.appendQueryParameter("minmag", minMagnitude);
+        uriBuilder.appendQueryParameter("orderby", orderBy);
+
+        // convert completed URI to String
+        // for example "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=10&minmag=minMagnitude&orderby=orderBy"
+        String urlFromUri = uriBuilder.toString();
+
+        // pass concatenated URL to new loader
+        EarthquakeLoader loader = new EarthquakeLoader(this, urlFromUri);
         return loader;
 
     }
