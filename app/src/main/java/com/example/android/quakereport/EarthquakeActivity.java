@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -69,7 +68,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-Log.e(LOG_TAG, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ onCreate");
+
         // super class constructor
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
